@@ -1,6 +1,7 @@
 //create an image variable that will hold the file
 PImage mapImage;
 Table locationTable;
+Table nameTable;
 int rowCount;
 Table dataTable;
 float dataMin = MAX_FLOAT;
@@ -8,6 +9,11 @@ float dataMax = MIN_FLOAT;
 
 void setup() {
   size(640, 400);
+  
+  //load the font
+  PFont font = loadFont("Univers-Bold-12.vlw");
+  textFont(font); //sets the font
+  
   //load the image of United States
   mapImage = loadImage("map.png");
 
@@ -20,6 +26,9 @@ void setup() {
 
   //read the data table
   dataTable = new Table("random.tsv");
+  
+  //read the name table
+  nameTable = new Table("names.tsv");
 
   //find the minimum and maximum values.
   for (int row = 0; row < rowCount; row++) {
@@ -31,6 +40,8 @@ void setup() {
     if (value < dataMin) {
       dataMin = value;
     }
+    println(dataMin);
+    println(dataMax);
   }
 }
 
@@ -96,7 +107,7 @@ void drawData (float x, float y, String abbrev) {
    ellipse (x, y, diameter, diameter);
    */
 
-  //*
+  /*
   //same as the above example, but instead of size
   //I will use transparency (alpha)
   float value = dataTable.getFloat(abbrev, 1);
@@ -110,7 +121,32 @@ void drawData (float x, float y, String abbrev) {
     transparency = map(value, 0, dataMin, 0, 255);
     fill(#EC5166, transparency);
   }
-
   ellipse (x, y, 20, 20);
+  */
+  
+  //roll over
+  float value = dataTable.getFloat(abbrev, 1);
+  float radius = 0;
+  if (value >= 0) {
+    radius = map(value, 0, dataMax, 1.5, 15);
+    fill(#4422CC); //blue
+  } else {
+    radius = map(value, 0, dataMin, 1.5, 15);
+    fill(#FF4422);
+  }
+  ellipseMode(RADIUS); //change the ellipse mode to Radius
+  ellipse(x, y, radius, radius); //this will draw the circle
+  
+  if (dist(x, y, mouseX, mouseY) < radius+2) {
+    fill(0); //fill for the text
+    textAlign(CENTER);
+    
+    //Show the data value and the state abbreviation in parentheses.
+    //text(value + " (" + abbrev + ")", x, y-radius-4);
+    
+    //Show the longer name from names.tsv
+    String name = nameTable.getString(abbrev, 1);
+    text(name + " " + value, x, y-radius-4);
+  }
 }
 
