@@ -4,8 +4,8 @@ Table locationTable;
 Table nameTable;
 int rowCount;
 Table dataTable;
-float dataMin = MAX_FLOAT;
-float dataMax = MIN_FLOAT;
+float dataMin = -10; //set the min&max so we can do changing data
+float dataMax = 10;
 
 //global variables set in drawData() and read in draw()
 float closestDist;
@@ -35,20 +35,6 @@ void setup() {
   
   //read the name table
   nameTable = new Table("names.tsv");
-
-  //find the minimum and maximum values.
-  for (int row = 0; row < rowCount; row++) {
-    float value = dataTable.getFloat(row, 1);
-
-    if (value > dataMax) {
-      dataMax = value;
-    }
-    if (value < dataMin) {
-      dataMin = value;
-    }
-    println(dataMin);
-    println(dataMax);
-  }
 }
 
 void draw() {
@@ -122,9 +108,31 @@ void drawData (float x, float y, String abbrev) {
   if ((d < radius +2) && (d < closestDist)) {
     closestDist = d;
     String name = nameTable.getString(abbrev, 1);
-    closestText = name + " " + value;
+    //nf() sets specifies the number of digits to the
+    //left & right of the decimal point.
+    
+    //nfp() put "+" or "-" signs depending on the value
+    closestText = name + " " + nfp(value, 0, 2);
     closestTextX = x;
     closestTextY = y-radius-4;
+  }
+}
+
+//when key is pressed the values are randomized and overwritten
+void keyPressed() {
+  if (key == 'r') {
+    updateTable();
+  }
+}
+
+void updateTable () {
+  for (int row = 0; row < rowCount; row++) {
+    //random() takes min & max and pick a random number
+    float newValue = random(dataMin, dataMax);
+    
+    //setFloat() overwrites old value from the data table with
+    //new random value
+    dataTable.setFloat(row, 1, newValue);
   }
 }
 
