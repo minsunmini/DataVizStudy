@@ -32,19 +32,23 @@ void draw() {
 
   image(mapImage, 0, 0);
 
+  for (int row = 0; row < rowCount; row++) {
+
+    String stateAbb = locationTable.getRowName(row);
+
+    float locationX = locationTable.getFloat(stateAbb, 1);
+    float locationY = locationTable.getFloat(stateAbb, 2);
+
+    drawData(locationX, locationY, stateAbb);
+  }
+}
+
+void drawData (float locationX, float locationY, String stateAbb) {
   fill(0, 80);
   noStroke();
 
-  for (int row = 0; row < rowCount; row++) {
-    
-    float value = valueTable.getFloat(row, 1);
-    
-    float mappedValue = map(value, dataMin, dataMax, 2, 40);
-
-    float locationX = locationTable.getFloat(row, 1);
-    float locationY = locationTable.getFloat(row, 2);
-    
-    ellipse(locationX, locationY, mappedValue, mappedValue);
-  }
+  float value = valueTable.getFloat(stateAbb, 1);
+  float mappedValue = map(value, dataMin, dataMax, 2, 40);
+  ellipse(locationX, locationY, mappedValue, mappedValue);
 }
 
